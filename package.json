@@ -1,0 +1,24 @@
+{
+  "name": "homework8-clairehe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usc-csci571/homework8-clairehe.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/usc-csci571/homework8-clairehe/issues"
+  },
+  "homepage": "https://github.com/usc-csci571/homework8-clairehe#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "request": "^2.88.0"
+  }
+}

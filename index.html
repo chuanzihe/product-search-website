@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="styles.css">    
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.0/angular-material.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.0/angular-material.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-svg-round-progressbar/0.4.8/roundProgress.min.js"></script> 
+    <script src="script.js"></script>
+    <script src="app.js"></script>
+    <title>HW8 Chuanzi He</title> 
+  </head>
+
+  <body ng-app="hw8App" ng-controller="appCtrller" ng-init="getZip(this)">
+  <div class="main_container">
+    
+    <div class="form_container"> 
+      <div class="search_head offset-sm-3">
+        <h3> Product Search</h3>
+      </div>    
+      <form name="mainform" novalidate>
+
+        <div class="row form-group offset-sm-2">
+          <label for="keyword" class="col-sm-3 col-form-label"><b>Keyword<i style="color: red">*</i></b></label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="keyword" placeholder="Enter Product Name(e.g. iPhone8)" ng-model="keyword" name="keyword" required ng-pattern="checkKeyword">
+            <span style="color:red" ng-show="mainform.keyword.$touched && mainform.keyword.$invalid">
+              <!-- <span ng-show="mainform.keyword.$error.required">Keyword is required.</span> -->
+              Please enter a keyword.
+            </span>          
+            <!-- <span ng-show="mainform.keyword.$untouched && mainform.keyword.$invalid">The name is required.</span> -->
+          </div>
+        </div>
+
+
+        <div class="row form-group offset-sm-2">
+          <label for="categories" class="col-sm-3 col-form-label"><b>Category</b></label>
+          <div class="col-sm-3">
+            <select name="category" class="form-control" id="category" value="" ng-model="category">
+                <option selected value="all">All Categories</option>
+                <option value="art" >Art</option>
+                <option value="baby" >Baby</option>
+                <option value="books" >Books</option>
+                <option value="clothing" >Clothing,Shoes & Accessories</option>
+                <option value="computers" >Computers/Tablets & Networking</option>
+                <option value="health" >Health & Beatuty</option>
+                <option value="music" >Music</option>
+                <option value="video" >Video Games & Consoles</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row form-group offset-sm-2">          
+          <label for="condition" class="col-sm-3 col-form-label"><b>Condition</b></label>     
+          <div class="col-sm-4">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="new" value="new" ng-model="new">
+              <label class="form-check-label" for="new">New</label>
+            </div>
+            <div class="form-check form-check-inline">            
+              <input class="form-check-input" type="checkbox" id="used" value="used" ng-model="used">
+              <label class="form-check-label" for="used">Used</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check form-check-inline" type="checkbox" id="unspecified" value="unspecified" ng-model="unspecified">
+              <label class="form-check-label" for="unspecified">Unspecified</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row form-group offset-sm-2">
+          <label for="shipping_opts" class="col-sm-3 col-form-label"><b>Shipping Options</b></label>
+          <div class="col-sm-6">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="pickup" id="pickup" value="pickup" ng-model="pickup">
+              <label class="form-check-label" for="pickup">Local Pickup</label> 
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="shipping" id="shipping" value="shipping" ng-model="shipping">
+              <label class="form-check-label" for="shipping">Free Shipping</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row offset-sm-2">
+          <label for="distance" class="col-sm-3 col-form-label"><b>Distance(miles)</b></label>
+          <div class="col-2">
+            <input type="text" class="form-control" id="distance" placeholder="10" ng-model="miles">
+          </div>
+        </div>
+
+        <fieldset class="row form-group offset-sm-2">
+          <label class="col-form-label col-sm-3 pt-0"><b>From<i style="color: red">*</i></b></label>
+          <div class="col-sm-6">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="gridRadios" id="currentloc" ng-value=0 ng-model="location">
+              <label class="form-check-label" for="currentloc">
+                Current Location
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="gridRadios" id="otherloc"   ng-value=1 ng-model="location" >
+              <label class="form-check-label" for="otherloc">
+                Other. Please specify zip code:
+              </label>
+            </div>
+
+            <md-autocomplete
+                ng-disabled="location!=1"
+                md-no-cache="true"
+                md-search-text-change="searchTextChange(this)"
+                md-search-text="searchText"                  
+                md-items="item in responseData"
+                md-item-text="item.display"
+                md-min-length="3"
+                required
+                name='otherzipcode'
+                id='otherzipcode'
+                ng-class="{invalidBox:mainform.otherzipcode.$touched && mainform.otherzipcode.$invalid && location==1}"
+                >
+            </md-autocomplete>
+
+            <span style="color:red" ng-show="mainform.otherzipcode.$touched && mainform.otherzipcode.$invalid">
+              Please enter a keyword.
+            </span>                  
+            <div class="error" ng-show="mainform.otherzipcode.$error.required && mainform.otherzipcode.$invalid">
+              <span ng-message="required">Please enter a zip code</span>              
+            </div>                               
+          </div>
+        </fieldset>
+
+
+        <div class="row form-group offset-sm-2">
+            <button type="button" id="search" class="btn btn-light form-group" ng-disabled="mainform.keyword.$invalid" ng-click="progress_bar=true;sendAPI(this);secpage='list'"><i class="material-icons">search</i> <span style="position: relative; top: -7px;">Search</span></button>
+            <button type="button" id="clear" class="btn btn-light form-group offset-sm-1" ng-click="clear()"><i class="material-icons">clear_all</i><span style="position: relative; top: -7px;">Clear</span></button>
+        </div>
+      </form>
+    </div>
+
+    <!-- navigation buttons -->
+    <div class="results_wishlist_button">
+      <div class="btn-group" role="group">
+        <button class='btn btn-light' ng-click="mainpage='results'">Results</button>
+        <button class='btn btn-light' ng-click="mainpage='wishlist';showWishList(this);">Wish List</button>
+      </div>
+    </div>  
+    
+    <!-- display tab buttons -->  
+    <!-- display progressive bar -->
+    <div class="contaniner">
+        <div class="progress" ng-show="progress_bar==true" style="width: 80%; margin: 10px auto;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+        </div>
+    </div>
+
+    <!-- Wishlist PAGE -->
+    <div ng-show="mainpage=='wishlist'">     
+      <div class='form-group error_msg' ng-show="wishlist_error">
+        No Records.
+      </div>        
+      <div class="list_detail" ng-show="!wishlist_error">
+        <button ng-show="secpage=='detail'" ng-click="secpage='list'">List</button>
+        <button ng-show="secpage=='list' && cur_itemId" ng-click="secpage='detail';page='product'">Detail</button>
+      </div>       
+      <table class="table col-sm-12 table-striped table-dark" ng-show="!wishlist_error">
+        <thead>
+          <tr>
+            <th><b>#</b></th>
+            <th><b>Image</b></th>
+            <th><b>Title</b></th>
+            <th><b>Price</b></th>
+            <th><b>Shipping</b></th>
+            <th><b>Seller</b></th>
+            <th><b>Wish List</b></th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in wishlistTable">
+          <!-- ng-show="item['wishlist']"> -->
+          <td> {{item['index']}} </td>
+          <td> <img src={{item['img']}} width="100px" height="100px"></td>
+          <td> {{item['title']}} </td>    
+          <td> {{item['price']}} </td>
+          <td> {{item['shipping']}} </td>  
+          <td style="text-transform:uppercase;"> {{item['seller']}} </td>      
+          <td> 
+            <i class="material-icons icon-gold" ng-click="removeWishlist(scope,item);showWishList(this.$parent)">remove_shopping_cart</i>
+          </td>            
+        </tr>
+        <!-- integrate into -->
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+          Total Shopping 
+          </td>
+          <td>
+          ${{total_price}}  
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Result PAGE -->
+    <!-- display search result -->
+    <div ng-show="mainpage=='results'">
+
+      <!-- SECPAGE BUTTONS -->
+      <div class="detail_button">        
+        <button class="btn btn-light" ng-show="secpage=='list' && cur_itemId" ng-click="secpage='detail';page='product'"> Detail ></button>      
+      </div>
+
+      <!-- SEARCH TAB -->
+      <div ng-show="secpage=='list'" class="slide_anima">
+        <div class='error_msg' ng-show="search_error">
+          No Records.
+        </div>
+        <table class="table table-striped table-dark table-hover" ng-show="tab_results_visible">
+          <thead>
+            <tr style="text-align: center;">        
+              <th><b>#</b></th>
+              <th><b>Image</b></th>
+              <th><b>Title</b></th>
+              <th><b>Price</b></th>
+              <th><b>Shipping</b></th>
+              <th><b>Zip</b></th>
+              <th><b>Seller</b></th>
+              <th><b>Wish List</b></th>
+            </tr> 
+          </thead>
+          <tbody>
+            <tr ng-repeat="(index,item) in displayTable" ng-class="{highlight_row:item['itemId']==cur_itemId}">         
+              <td> {{(pageNum-1)*10+index+1}} </td>
+              <td> <img src={{item['img']}} width="100px" height="100px"></td>
+              <!-- alert: scope of this here is item, not global scope -->
+              <td> <div style="color: #1874CD" ng-click="this.$parent.secpage='detail';this.$parent.page='product'; this.$parent.progress_bar=true;showDetail(this.$parent,item['itemId'],index);" class="full_title" data-placement="bottom" title="{{item['title_full']}}" onmouseenter="$(this).tooltip('show')">{{item['title']}}</div></td>                            
+              <td> {{item['price']}} </td>
+              <td> {{item['shipping']}} </td>
+              <td> {{item['zip']}} </td>
+              <td style="text-transform:uppercase;"> {{item['seller']}} </td>
+              <td> 
+                <button class="btn btn-light btn-sm" >
+                  <i class="material-icons" ng-show="!idInList(item['itemId'])" ng-click="addWishlist(this.$parent,item);">add_shopping_cart</i>
+                  <i class="material-icons icon-gold" ng-show="idInList(item['itemId'])" ng-click="removeWishlist(this.$parent,item);">remove_shopping_cart</i>
+                </button>
+              </td>      
+            </tr>
+          </tbody>
+       </table>
+
+        <!-- page navigation -->
+       <nav aria-label="Page navigation example" ng-show="tab_results_visible">
+         <ul class="pagination justify-content-center">
+           <li class="page-item disabled">
+             <a class="page-link" tabindex="-1" ng-click="flipPage(this,pageNum-1)" ng-disabled="pageNum==1">Previous</a>
+           </li>
+           <li class="page-item"><a class="page-link" ng-click="flipPage(this,1)">1</a></li>
+           <li class="page-item"><a class="page-link" ng-click="flipPage(this,2)">2</a></li>
+           <li class="page-item"><a class="page-link" ng-click="flipPage(this,3)">3</a></li>
+           <li class="page-item"><a class="page-link" ng-click="flipPage(this,4)">4</a></li>
+           <li class="page-item"><a class="page-link" ng-click="flipPage(this,5)">5</a></li>
+           <li class="page-item">
+             <a class="page-link" ng-click="flipPage(this,pageNum+1)" ng-disabled="pageNum==5">Next</a>
+           </li>
+         </ul>
+       </nav>
+
+      </div>
+    </div>
+
+    <!-- Detail tabs -->
+    <!-- <div class="slide_anima"> -->
+
+    <div ng-show="(mainpage=='wishlist' || mainpage == 'results') && secpage=='detail'" >
+
+      <div style="text-align: center; margin: 20px auto;"><p><b>{{showDetailTable.title}}</b></p></div>
+
+      <div class="list_face">   
+       <div class="share_buttons">
+        <div class="btn-group">
+          <button type="button" class="btn btn-light" ng-click="shareFB(this, displayTable[cur_displayIndex])">
+            <img src="http://csci571.com/hw/hw8/Images/facebook.png" width="30px"> 
+          </button>
+          <button type="button" class="btn btn-light" ng-click="addWishlist(this,displayTable[cur_displayIndex])"  ng-show="!idInList(cur_itemId)">
+            <i class="material-icons" >add_shopping_cart</i>
+          </button>
+          <button type="button" class="btn btn-light" ng-click="removeWishlist(this,displayTable[cur_displayIndex])"  ng-show="idInList(cur_itemId)">            
+            <i class="material-icons icon-gold" >remove_shopping_cart</i 
+          </button>                          
+        </div>   
+       </div>
+       <div class="list_button">
+         <button class="btn btn-light" ng-show="secpage=='detail'" ng-click="secpage='list'">< List</button>        
+       </div>         
+      </div>
+
+      <div class="nav_tab">    
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <!-- todo: no need to send showDetail again? -->
+          <button type="button" class="btn btn-light" ng-click="page='product' ;progress_bar=true; showDetail(this,this.cur_itemId,this.cur_itemIndex)">Product</button>
+          <button type="button" class="btn btn-light" ng-click="page='photos'  ;progress_bar=true; showPhotos(this)">Photos</button>
+          <button type="button" class="btn btn-light" ng-click="page='shipping';progress_bar=true; showShipping(this);">Shipping</button>
+          <button type="button" class="btn btn-light" ng-click="page='seller'  ;progress_bar=true; showSeller(this);">Seller</button>
+          <button type="button" class="btn btn-light" ng-click="page='similar' ;progress_bar=true; showSimilar(this);">Similar Products</button>
+        </div>      
+      </div>
+<!--         <tr>
+          <td width="25px">
+            <img src="http://csci571.com/hw/hw8/Images/facebook.png" width="25px"> 
+          </td>
+          <td width="25px">
+            <i ng-click="addWishlist(this,displayTable[cur_displayIndex])" class="material-icons" ng-show="!idInList(cur_itemId)">add_shopping_cart</i>
+            <i ng-click="removeWishlist(this,displayTable[cur_displayIndex])" class="material-icons icon-gold" ng-show="idInList(cur_itemId)">remove_shopping_cart</i> 
+          </td>
+        </tr> -->
+
+      
+      <!-- *********** -->
+      <!-- PRODUCT TAB -->
+      <!-- *********** -->
+      <div ng-show="page=='product'">
+
+        <table class="table table-striped table-dark">
+          <!-- <table class='detail_tab_table' padding: 15px cellspacing='0' width='720' style="padding-left: 10px;"> -->
+            <tr ng-show="showDetailTable.hasOwnProperty('images')">
+              <!-- <td>{{showDetailTable.image}}</td> -->
+              <td><b>Photo Images</b></td>
+              <!-- <td><div ng-click="showPhotos(this)">View Product Images Here</div></td> -->
+              <td><a data-toggle="modal" data-target="#myModal" style="color:turquoise">View Product Images Here</a></td>
+            </tr>
+            </tr>
+            <tr ng-repeat="values in showDetailTable">
+              <td><b>{{values[0]}}</b></td>
+              <td>{{values[1]}}</td>                
+            </tr>
+        </table>
+      </div>
+
+      <!-- MODAL -->
+      <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h6 class="modal-title">Product Images</h6>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                  <div id="demo" class="carousel slide">
+                      <div class="carousel-inner row" style="width: 100%; margin: auto;">
+                          <div class="carousel-item" ng-class="{active:!$index}" ng-repeat="image in showDetailTable.images" style="width: 100%; border: solid 4px; border-color: black; margin: auto;">
+                              <a href="{{image}}" target="_blank">
+                                  <img src="{{image}}" style="width: 100%; margin: auto;">
+                              </a>                                  
+                              <a class="carousel-control-prev" href="#demo" data-slide="prev" style="background-color: black; width: 30px; height: 30px; margin: auto">  
+                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                              </a>
+                              <a class="carousel-control-next" href="#demo" data-slide="next" style="background-color: black; width: 30px; height: 30px; margin: auto">
+                                  <span class="carousel-control-next-icon"  aria-hidden="true"></span>
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>     
+            </div>
+          </div>
+      </div>      
+
+      <!-- *********** -->
+      <!-- PHOTOS TAB -->
+      <!-- *********** -->
+
+      <div class="image_tab" ng-show="page=='photos' && img_links.length>0">
+        <div class="row"> 
+          <div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;">
+            <div class="img_grid" ng-show="img_links.length>0"><a href={{img_links[0]}} target="_blank"><img ng-src={{img_links[0]}} width="100%"></a></div>
+            <div class="img_grid" ng-show="img_links.length>3"><a href={{img_links[3]}} target="_blank"><img ng-src={{img_links[3]}} width="100%"></a></div>        
+          </div>
+
+          <div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;">
+            <div class="img_grid" ng-show="img_links.length>1"><a href={{img_links[1]}} target="_blank"><img ng-src={{img_links[1]}} width="100%"></a></div>
+            <div class="img_grid" ng-show="img_links.length>4"><a href={{img_links[4]}} target="_blank"><img ng-src={{img_links[4]}} width="100%"></a></div>
+            <div class="img_grid" ng-show="img_links.length>6"><a href={{img_links[6]}} target="_blank"><img ng-src={{img_links[6]}} width="100%"></a></div>          
+          </div>
+
+          <div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;">
+            <div class="img_grid" ng-show="img_links.length>2"><a href={{img_links[2]}} target="_blank"><img ng-src={{img_links[2]}} width="100%"></a></div>
+            <div class="img_grid" ng-show="img_links.length>5"><a href={{img_links[5]}} target="_blank"><img ng-src={{img_links[5]}} width="100%"></a></div>
+            <div class="img_grid" ng-show="img_links.length>7"><a href={{img_links[7]}} target="_blank"><img ng-src={{img_links[7]}} width="100%"></a></div>          
+          </div>
+        </div>
+      </div>
+
+      <!-- *********** -->
+      <!-- SHIPPING TAB -->
+      <!-- *********** -->
+
+      <div ng-show="page=='shipping'">          
+        <table class="table table-striped table-dark shipping_table">
+          <tr class="col-2" ng-show="shipTable['cost']     "><td><b>Shipping Cost</b></td>
+            <td>{{shipTable.cost}}</td></tr>
+          <tr class="col-2" ng-show="shipTable['location'] "><td><b>Shipping Locations</b></td>
+            <td>{{shipTable.location}}</td></tr>
+          <tr class="col-2" ng-show="shipTable['time']     "><td><b>Handling time</b></td>
+            <td>{{shipTable.time}}</td>
+          </tr>
+          <tr class="col-2" ng-show="shipTable.hasOwnProperty('expedited')"><td><b>Expedited Shipping</b></td>
+            <td>
+              <i class="material-icons icon-green" ng-show="shipTable['expedited']">done</i>
+              <i class="material-icons icon-red" ng-show="!shipTable['expedited']">clear</i>
+            </td>   
+          </tr>         
+          <tr class="col-2" ng-show="shipTable.hasOwnProperty('oneday')"><td><b>One Day Shipping</b></td>
+            <td>
+              <i class="material-icons icon-green" ng-show="shipTable['oneday']">done</i>
+              <i class="material-icons icon-red" ng-show="!shipTable['oneday']">clear</i>
+            </td> 
+          </tr>  
+          <tr class="col-2" ng-show="shipTable.hasOwnProperty('return')"><td><b>Return Accepted</b></td>
+            <td>
+              <i class="material-icons icon-green" ng-show="shipTable['return']">done</i>
+              <i class="material-icons icon-red" ng-show="!shipTable['return']">clear</i>
+            </td> 
+          </tr>
+        </table>
+      </div>
+
+      <!-- *********** -->
+      <!-- SELLER TAB -->
+      <!-- *********** -->
+
+      <div ng-show="page=='seller'">
+        <!-- @todo: round progress not working -->
+        <table class="table table-striped table-dark">
+          <tr ng-show="sellerTable.hasOwnProperty('name')"><td colspan="2" style="text-align: center;">{{sellerTable['name_title']}}</td></tr>
+          <tr ng-show="sellerTable.hasOwnProperty('score')"><td>Feedback Score</td><td>{{sellerTable['score']}}</td></tr>
+          <tr ng-show="sellerTable.hasOwnProperty('percent')"><td>Popularity</td>                    
+            <td>
+                <div style="height: 35px">
+                    <round-progress 
+                        max="100"
+                        current="sellerTable['percent']"
+                        color="green"
+                        radius="20"
+                        stroke="3"
+                        semi="false"
+                        rounded="true"
+                        clockwise="false"
+                        responsive="false"
+                        duration="0"
+                        animation="No"
+                        animation-delay="0"
+                        >
+                    </round-progress>
+                    <div style="position: relative; top: -32px; left: 4px;">{{sellerTable['percent']}}</div>
+                </div>
+            </td>            
+          </tr>        
+          <tr ng-show="sellerTable.hasOwnProperty('star')"><td>Feedback Rating Star</td>
+            <td>
+            <i class="material-icons" ng-style="sellerTable['star']" ng-show="sellerTable['score']>=10000">stars</i>
+            <i class="material-icons" ng-style="sellerTable['star']" ng-show="sellerTable['score']<10000">star_border</i>
+            </td>
+          </tr>
+          <tr ng-show="sellerTable.hasOwnProperty('top')"><td>Top Rated</td>
+            <td>
+              <i class="material-icons icon-green" ng-show="sellerTable['top']">done</i>
+              <i class="material-icons icon-red"   ng-show="!sellerTable['top']">clear</i>
+            </td>
+          </tr>
+          <tr ng-show="sellerTable.hasOwnProperty('name')"><td>Store Name</td><td>{{sellerTable['name']}}</td></tr>
+          <tr ng-show="sellerTable.hasOwnProperty('url')"><td>Buy Product At</td><td><a href="{{sellerTable['url']}}" target="_blank">Store</a></td></tr>
+        </table>
+      </div>
+
+      <!-- *********** -->
+      <!-- SIMILAR TAB -->
+      <!-- *********** -->
+
+      <div ng-show="page=='similar'">      
+        <div ng-show="tab_similar_error" class="error_msg">
+          <p>
+            No Records.
+          </p>
+        </div>
+
+        <!-- dropdown menu -->
+        <div ng-show="!tab_similar_error">
+          <div style="margin-bottom: 10px ">
+            <select class="col-sm-3 " ng-init="selectedCate=rankCates[0]" ng-model="selectedCate" ng-change="showSimilar(this)" ng-options="x.display for x in rankCates">
+            </select>
+            <select class="col-sm-3 offset-sm-1" ng-init="selectedAscend=rankDirections[0]" ng-model="selectedAscend" ng-change="showSimilar(this)" ng-options="x.display for x in rankDirections" ng-disabled="selectedCate.value=='default'">
+            </select>
+          </div>
+
+          <div class="similar_items" ng-repeat="index in sim_ranks.slice(0,5)">
+            <table class="table table-dark">
+              <tr>
+                <td width="150px">
+                  <img ng-src={{similarTable[index]['img_url']}} width="150">
+                </td>
+                <td>
+                  <ul class="similar_info">             
+                    <li style="list-style-type: none; color: rgb(89,112,117); ">
+                      {{similarTable[index]['name']}}
+                    </li>                
+                    <li style="list-style-type: none; color: rgb(149,184,144);">
+                      Price: ${{similarTable[index]['price']}}
+                    </li>  
+                    <li style="list-style-type: none; color: rgb(172,154,87);">
+                      Shipping Cost: {{similarTable[index]['ship']}}
+                    </li>  
+                    <li style="list-style-type: none; color: white">
+                      Days Left: {{similarTable[index]['days']}}
+                    </li>                                                  
+                  </ul>
+                </td>
+              </tr>          
+            </table>
+          </div>
+          <div class="similar_items" ng-repeat="index in sim_ranks.slice(5)" ng-show="show_more_enabled">
+            <table class="table table-dark">
+              <tr>
+                <td width="100px">
+                  <img ng-src={{similarTable[index]['img_url']}} width="150">
+                </td>
+                <td>
+                  <ul class="similar_info">             
+                    <li style="color: rgb(89,112,117); ">
+                      {{similarTable[index]['name']}}
+                    </li>                
+                    <li style="color: rgb(149,184,144);">
+                      Price: {{similarTable[index]['price']}}
+                    </li>  
+                    <li style="color: rgb(172,154,87);">
+                      Shipping Cost: {{similarTable[index]['ship']}}
+                    </li>  
+                    <li style="color: white">
+                      Days Left: {{similarTable[index]['days']}}
+                    </li>                                                  
+                  </ul>
+                </td>
+              </tr>          
+            </table>
+          </div>
+
+          <div style="margin: 5px auto; text-align: center;">
+            <button  class=" btn btn-dark show_more_less_button"  ng-click="show_more_enabled=true" ng-show="!show_more_enabled" >Show More</button>
+            <button  class=" btn btn-dark show_more_less_button" ng-click="show_more_enabled=false" ng-show="show_more_enabled" >Show Less</button>
+          </div>       
+
+        </div>
+      </div>
+    </button>
+    </div>    
+  </div> 
+  </body>
+</html>
